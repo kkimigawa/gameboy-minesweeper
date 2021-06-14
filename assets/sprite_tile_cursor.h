@@ -1,6 +1,6 @@
 /*
 
- SPRITE_TILE_MINE.H
+ SPRITE_TILE_CURSOR.H
 
  Include File.
 
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define sprite_tile_mineBank 0
+#define sprite_tile_cursorBank 0
 /* Start of tile array. */
-extern unsigned char sprite_tile_mine[];
+extern unsigned char sprite_tile_cursor[];
 
-/* End of SPRITE_TILE_MINE.H */
+/* End of SPRITE_TILE_CURSOR.H */

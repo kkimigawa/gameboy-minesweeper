@@ -1,7 +1,7 @@
 #include <gb/gb.h>
 #include "bkg_mine.h"
-#include "bkg_tile_mine.h"
-#include "bkg_map_mine.h"
+#include "../assets/bkg_tile_mine.h"
+#include "../assets/bkg_map_mine.h"
 
 #define MAP_MINE_WIDTH (20)
 #define MAP_MINE_HEIGHT (18)
