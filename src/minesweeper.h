@@ -22,15 +22,7 @@
 #define MINE_RESULT_CLEAR (1)
 #define MINE_RESULT_GAMEOVER (2)
 
-struct Minesweeper {
-    uint8_t blocks[MINE_MAX_WIDTH * MINE_MAX_HEIGHT];
-    int8_t width;
-    int8_t height;
-    int8_t bomb_count;
-    int8_t result;
-};
-
-void mine_init(struct Minesweeper* mine, int8_t width, int8_t height, int8_t bomb_count);
-void mine_start(struct Minesweeper* mine, int8_t x, int8_t y);
-void mine_open(struct Minesweeper* mine, int8_t x, int8_t y);
-void mine_check(struct Minesweeper* mine, int8_t x, int8_t y);
+void mine_init(int8_t width, int8_t height, int8_t bomb_count);
+void mine_start(int8_t x, int8_t y);
+void mine_open(int8_t x, int8_t y);
+void mine_check(int8_t x, int8_t y);

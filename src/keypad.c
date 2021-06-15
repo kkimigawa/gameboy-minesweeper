@@ -17,17 +17,17 @@ void keypad_update()
     current_key = joypad();
 }
 
-int8_t keypad_trigger(uint8_t key)
+int8_t keypad_trigger(enum KeypadKey key)
 {
     return current_key & key && !(prev_key & key);
 }
 
-int8_t keypad_down(uint8_t key)
+int8_t keypad_down(enum KeypadKey key)
 {
     return current_key & key;
 }
 
-int8_t keypad_repeat(uint8_t key, uint8_t begin, uint8_t interval)
+int8_t keypad_repeat(enum KeypadKey key, uint8_t begin, uint8_t interval)
 {
     if ((current_key & key) == 0) {
         return 0;
@@ -51,4 +51,3 @@ int8_t keypad_repeat(uint8_t key, uint8_t begin, uint8_t interval)
 
     return 0;
 }
-
