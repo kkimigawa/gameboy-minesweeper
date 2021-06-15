@@ -12,17 +12,8 @@
 #define KEYPAD_KEY_SELECT (J_SELECT)
 #define KEYPAD_KEY_START (J_START)
 
-struct KeyPad {
-    uint8_t key;
-    uint8_t prev_key;
-    uint8_t repeat_begin;
-    uint8_t repeat_interval;
-    uint8_t repeat_begin_count;
-    uint8_t repeat_interval_count;
-};
-
-void keypad_init(struct KeyPad* keypad);
-void keypad_set_repeat(struct KeyPad* keypad, uint8_t repeat_begin, uint8_t repeat_interval);
-void keypad_update(struct KeyPad* keypad);
-int keypad_trigger(const struct KeyPad* keypad, uint8_t key);
-int keypad_down(const struct KeyPad* keypad, uint8_t key);
+void keypad_init();
+void keypad_update();
+int8_t keypad_trigger(uint8_t key);
+int8_t keypad_down(uint8_t key);
+int8_t keypad_repeat(uint8_t key, uint8_t begin, uint8_t interval);

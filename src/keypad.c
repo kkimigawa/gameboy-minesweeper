@@ -1,33 +1,54 @@
 #include "keypad.h"
 
-void keypad_init(struct KeyPad* keypad)
+static uint8_t current_key;
+static uint8_t prev_key;
+static uint8_t repeat_count;
+
+void keypad_init()
 {
-    keypad->key = 0;
-    keypad->prev_key = 0;
-    keypad->repeat_begin = 0;
-    keypad->repeat_interval = 0;
-    keypad->repeat_begin_count = 0;
-    keypad->repeat_interval_count = 0;
+    current_key = 0;
+    prev_key = 0;
+    repeat_count = 0;
 }
 
-void keypad_set_repeat(struct KeyPad* keypad, uint8_t repeat_begin, uint8_t repeat_interval)
+void keypad_update()
 {
-    keypad->repeat_begin = repeat_begin;
-    keypad->repeat_interval = repeat_interval;
+    prev_key = current_key;
+    current_key = joypad();
 }
 
-void keypad_update(struct KeyPad* keypad)
+int8_t keypad_trigger(uint8_t key)
 {
-    keypad->prev_key = keypad->key;
-    keypad->key = joypad();
+    return current_key & key && !(prev_key & key);
 }
 
-int keypad_trigger(const struct KeyPad* keypad, uint8_t key)
+int8_t keypad_down(uint8_t key)
 {
-    return keypad->key & key && !(keypad->prev_key & key);
+    return current_key & key;
 }
 
-int keypad_down(const struct KeyPad* keypad, uint8_t key)
+int8_t keypad_repeat(uint8_t key, uint8_t begin, uint8_t interval)
 {
-    return keypad->key & key;
+    if ((current_key & key) == 0) {
+        return 0;
+    }
+
+    if (current_key != prev_key) {
+        repeat_count = 0;
+        return 1;
+    }
+
+    repeat_count++;
+
+    if (repeat_count > begin + interval) {
+        repeat_count = begin + 1;
+        return 1;
+    }
+
+    if (repeat_count == begin) {
+        return 1;
+    }
+
+    return 0;
 }
+
