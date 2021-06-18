@@ -33,7 +33,7 @@ int8_t keypad_repeat(enum KeypadKey key, uint8_t begin, uint8_t interval)
         return 0;
     }
 
-    if (current_key != prev_key) {
+    if ((prev_key & key) == 0 && current_key != prev_key) {
         repeat_count = 0;
         return 1;
     }
