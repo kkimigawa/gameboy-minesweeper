@@ -81,6 +81,14 @@ int8_t mine_open(int16_t x, int16_t y)
     } else if (status == MINE_STATUS_BOMB) {
         _result = MINE_RESULT_GAMEOVER;
         _blocks[index] = MINE_BLOCK_HIT_BOMB;
+
+        for (int16_t i = 0; i < MINE_BLOCK_SIZE; i++) {
+            if (i == index) { continue; }
+
+            if ((_statuses[i] & 0x0f) == MINE_STATUS_BOMB) {
+                _blocks[i] = MINE_BLOCK_BOMB;
+            }
+        }
     }
 
     _statuses[index] |= MINE_STATUS_FLAG_OPEN;
