@@ -61,18 +61,24 @@
 #define MINE_HEIGHT (16)
 #define MINE_BOMB (30)
 
+#define STATE_PLAYING (1)
+#define STATE_END (2)
+
 static int16_t _cursor_x;
 static int16_t _cursor_y;
 static int16_t _cursor_disp_x;
 static int16_t _cursor_disp_y;
 static int8_t _cursor_anim_count;
 static int8_t _cursor_anim_tile;
+static int8_t _state;
 
 static void bkg_mine_bomb_count(int16_t bomb_count);
 static void bkg_mine_timer(uint8_t timer);
 static void bkg_mine_clear();
 static void bkg_mine_gameover();
 static void bkg_blocks();
+static void update_state_playing();
+static void update_state_end();
 
 void scene_game_init()
 {
@@ -91,6 +97,7 @@ void scene_game_init()
     _cursor_disp_y = CURSOR_DISP_OFFSET_Y;
     _cursor_anim_count = 0;
     _cursor_anim_tile = 0;
+    _state = STATE_PLAYING;
 
     SHOW_BKG;
     SHOW_SPRITES;
@@ -98,56 +105,11 @@ void scene_game_init()
 
 void scene_game_update()
 {
-    if (keypad_repeat(KeypadUp, CURSOR_REPEAT_BEGIN, CURSOR_REPEAT_INTERVAL)) {
-        if (_cursor_y > 0) {
-            _cursor_y--;
-            _cursor_disp_y = CURSOR_DISP_OFFSET_Y + _cursor_y * TILE_SIZE;
-        }
-    } else if (keypad_repeat(KeypadDown, CURSOR_REPEAT_BEGIN, CURSOR_REPEAT_INTERVAL)) {
-        if (_cursor_y < MINE_HEIGHT - 1) {
-            _cursor_y++;
-            _cursor_disp_y = CURSOR_DISP_OFFSET_Y + _cursor_y * TILE_SIZE;
-        }
-    } else if (keypad_repeat(KeypadLeft, CURSOR_REPEAT_BEGIN, CURSOR_REPEAT_INTERVAL)) {
-        if (_cursor_x > 0) {
-            _cursor_x--;
-            _cursor_disp_x = CURSOR_DISP_OFFSET_X + _cursor_x * TILE_SIZE;
-        }
-    } else if (keypad_repeat(KeypadRight, CURSOR_REPEAT_BEGIN, CURSOR_REPEAT_INTERVAL)) {
-        if (_cursor_x < MINE_WIDTH - 1) {
-            _cursor_x++;
-            _cursor_disp_x = CURSOR_DISP_OFFSET_X + _cursor_x * TILE_SIZE;
-        }
-    } else if (keypad_trigger(KeypadA)) {
-        if (mine_open(_cursor_x, _cursor_y)) {
-            bkg_blocks();
-
-            int8_t result = mine_get_result();
-            if (result == MINE_RESULT_CLEAR) {
-                bkg_mine_clear();
-            } else if (result == MINE_RESULT_GAMEOVER) {
-                bkg_mine_gameover();
-            }
-        }
-    } else if (keypad_trigger(KeypadB)) {
-        if (mine_check(_cursor_x, _cursor_y)) {
-            bkg_mine_bomb_count(mine_get_check_bomb_count());
-            bkg_blocks();
-        }
+    if (_state == STATE_PLAYING) {
+        update_state_playing();
+    } else if (_state == STATE_END) {
+        update_state_end();
     }
-
-    _cursor_anim_count++;
-    if (_cursor_anim_count > CURSOR_ANIM_FRAME) {
-        _cursor_anim_count = 0;
-        _cursor_anim_tile++;
-        if (_cursor_anim_tile >= CURSOR_SPRITE_INDEX + CURSOR_SPRITE_NUM) {
-            _cursor_anim_tile = CURSOR_SPRITE_INDEX;
-        }
-
-        set_sprite_tile(SPRITE_CURSOR, _cursor_anim_tile);
-    }
-
-    move_sprite(SPRITE_CURSOR, _cursor_disp_x, _cursor_disp_y);
 }
 
 static void bkg_mine_bomb_count(int16_t bomb_count)
@@ -196,4 +158,68 @@ static void bkg_mine_gameover()
 static void bkg_blocks()
 {
     set_bkg_tiles(MAP_BLOCK_OFFSET_X, MAP_BLOCK_OFFSET_Y, MINE_WIDTH, MINE_HEIGHT, (uint8_t*)mine_get_blocks());
+}
+
+static void update_state_playing()
+{
+    if (keypad_repeat(KeypadUp, CURSOR_REPEAT_BEGIN, CURSOR_REPEAT_INTERVAL)) {
+        if (_cursor_y > 0) {
+            _cursor_y--;
+            _cursor_disp_y = CURSOR_DISP_OFFSET_Y + _cursor_y * TILE_SIZE;
+        }
+    } else if (keypad_repeat(KeypadDown, CURSOR_REPEAT_BEGIN, CURSOR_REPEAT_INTERVAL)) {
+        if (_cursor_y < MINE_HEIGHT - 1) {
+            _cursor_y++;
+            _cursor_disp_y = CURSOR_DISP_OFFSET_Y + _cursor_y * TILE_SIZE;
+        }
+    } else if (keypad_repeat(KeypadLeft, CURSOR_REPEAT_BEGIN, CURSOR_REPEAT_INTERVAL)) {
+        if (_cursor_x > 0) {
+            _cursor_x--;
+            _cursor_disp_x = CURSOR_DISP_OFFSET_X + _cursor_x * TILE_SIZE;
+        }
+    } else if (keypad_repeat(KeypadRight, CURSOR_REPEAT_BEGIN, CURSOR_REPEAT_INTERVAL)) {
+        if (_cursor_x < MINE_WIDTH - 1) {
+            _cursor_x++;
+            _cursor_disp_x = CURSOR_DISP_OFFSET_X + _cursor_x * TILE_SIZE;
+        }
+    } else if (keypad_trigger(KeypadA)) {
+        if (mine_open(_cursor_x, _cursor_y)) {
+            bkg_blocks();
+
+            int8_t result = mine_get_result();
+            if (result == MINE_RESULT_CLEAR) {
+                bkg_mine_clear();
+                _state = STATE_END;
+            } else if (result == MINE_RESULT_GAMEOVER) {
+                bkg_mine_gameover();
+                _state = STATE_END;
+            }
+        }
+    } else if (keypad_trigger(KeypadB)) {
+        if (mine_check(_cursor_x, _cursor_y)) {
+            bkg_mine_bomb_count(mine_get_check_bomb_count());
+            bkg_blocks();
+        }
+    }
+
+    _cursor_anim_count++;
+    if (_cursor_anim_count > CURSOR_ANIM_FRAME) {
+        _cursor_anim_count = 0;
+        _cursor_anim_tile++;
+        if (_cursor_anim_tile >= CURSOR_SPRITE_INDEX + CURSOR_SPRITE_NUM) {
+            _cursor_anim_tile = CURSOR_SPRITE_INDEX;
+        }
+
+        set_sprite_tile(SPRITE_CURSOR, _cursor_anim_tile);
+    }
+
+    move_sprite(SPRITE_CURSOR, _cursor_disp_x, _cursor_disp_y);
+}
+
+static void update_state_end()
+{
+    /* if (keypad_trigger(KeypadA)) { */
+    /* } */
+
+    move_sprite(SPRITE_CURSOR, 0, 0);
 }
