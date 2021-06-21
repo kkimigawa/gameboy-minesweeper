@@ -2,6 +2,11 @@
 
 #include <stdint.h>
 
+struct AnimSprite {
+    uint8_t anim_count;
+};
+
+void anim_sprite_init(struct AnimSprite *anm_sprite);
 /* struct GbAnimSprite { */
 /*     uint8_t anim_count; */
 /*     uint8_t anim_start_tile; */
