@@ -171,6 +171,7 @@ static void create_game(int16_t x, int16_t y)
     {
         int16_t rand_i;
         int16_t swap;
+
         for (int16_t i = 0; i < available_set_bomb_index_size; i++) {
             rand_i = randw() % available_set_bomb_index_size;
 
@@ -220,7 +221,7 @@ static void create_game(int16_t x, int16_t y)
 
 static void recursive_open(int16_t x, int16_t y)
 {
-    int16_t index = POS_TO_INDEX(x, y);
+    int16_t index;
     uint8_t status;
 
     for (int16_t around_y = y - 1; around_y <= y + 1; around_y++) {

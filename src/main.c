@@ -1,36 +1,35 @@
 #include <gb/gb.h>
 #include "keypad.h"
 #include "scene.h"
+#include "scene_title.h"
 #include "scene_game.h"
 
 void main()
 {
     scene_init();
-    scene_change(SceneGame);
+    scene_change(SceneTitle);
 
     keypad_init();
+
+    enum Scene scene;
 
     while (1) {
         keypad_update();
 
-        if (scene_is_changed()) {
-            switch (scene_current()) {
-                case SceneTitle:
-                    break;
+        scene = scene_current();
 
-                case SceneGame:
-                    scene_game_init();
-                    break;
+        if (scene_is_changed()) {
+            if (scene == SceneTitle) {
+                scene_title_init();
+            } else if (scene == SceneGame) {
+                scene_game_init();
             }
         }
 
-        switch (scene_current()) {
-            case SceneTitle:
-                break;
-
-            case SceneGame:
-                scene_game_update();
-                break;
+        if (scene == SceneTitle) {
+            scene_title_update();
+        } else if (scene == SceneGame) {
+            scene_game_update();
         }
 
         wait_vbl_done();

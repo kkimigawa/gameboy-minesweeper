@@ -1,5 +1,6 @@
 #include <gb/gb.h>
 #include "scene_game.h"
+#include "scene.h"
 #include "keypad.h"
 #include "minesweeper.h"
 #include "../assets/bkg_tile_mine.h"
@@ -82,6 +83,9 @@ static void update_state_end();
 
 void scene_game_init()
 {
+    HIDE_BKG;
+    HIDE_SPRITES;
+
     set_bkg_data(0, 40, bkg_tile_mine);
     set_bkg_tiles(0, 0, MAP_MINE_WIDTH, MAP_MINE_HEIGHT, bkg_map_mine);
 
@@ -218,8 +222,9 @@ static void update_state_playing()
 
 static void update_state_end()
 {
-    /* if (keypad_trigger(KeypadA)) { */
-    /* } */
+    if (keypad_trigger(KeypadStart)) {
+        scene_change(SceneTitle);
+    }
 
     move_sprite(SPRITE_CURSOR, 0, 0);
 }
