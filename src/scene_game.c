@@ -1,3 +1,4 @@
+#include <time.h>
 #include <gb/gb.h>
 #include "scene_game.h"
 #include "scene.h"
@@ -38,7 +39,7 @@
 #define BOMB_COUNT_W (2)
 #define BOMB_COUNT_H (1)
 
-#define TIMER_X (16)
+#define TIMER_X (15)
 #define TIMER_Y (0)
 #define TIMER_W (3)
 #define TIMER_H (1)
@@ -62,6 +63,8 @@
 #define MINE_HEIGHT (16)
 #define MINE_BOMB (30)
 
+#define TIME_LIMIT (999)
+
 #define STATE_PLAYING (1)
 #define STATE_END (2)
 
@@ -72,9 +75,11 @@ static int16_t _cursor_disp_y;
 static int8_t _cursor_anim_count;
 static int8_t _cursor_anim_tile;
 static int8_t _state;
+static time_t _begin_time;
+static time_t _time;
 
 static void bkg_mine_bomb_count(int16_t bomb_count);
-static void bkg_mine_timer(uint8_t timer);
+static void bkg_mine_timer(time_t timer);
 static void bkg_mine_clear();
 static void bkg_mine_gameover();
 static void bkg_blocks();
@@ -102,6 +107,8 @@ void scene_game_init()
     _cursor_anim_count = 0;
     _cursor_anim_tile = 0;
     _state = STATE_PLAYING;
+    _begin_time = time(NULL);
+    _time = _begin_time;
 
     SHOW_BKG;
     SHOW_SPRITES;
@@ -125,11 +132,11 @@ static void bkg_mine_bomb_count(int16_t bomb_count)
     set_bkg_tiles(BOMB_COUNT_X, BOMB_COUNT_Y, BOMB_COUNT_W, BOMB_COUNT_H, cells);
 }
 
-static void bkg_mine_timer(uint8_t timer)
+static void bkg_mine_timer(time_t timer)
 {
-    int8_t digit_1 = timer % 10;
-    int8_t digit_10 = (timer % 100) / 10;
-    int8_t digit_100 = timer / 100;
+    int8_t digit_1 = TILE_NUM_0 + timer % 10;
+    int8_t digit_10 = TILE_NUM_0 + (timer % 100) / 10;
+    int8_t digit_100 = TILE_NUM_0 + timer / 100;
 
     uint8_t cells[3] = { digit_100, digit_10, digit_1 };
     set_bkg_tiles(TIMER_X, TIMER_Y, TIMER_W, TIMER_H, cells);
@@ -215,6 +222,16 @@ static void update_state_playing()
         }
 
         set_sprite_tile(SPRITE_CURSOR, _cursor_anim_tile);
+    }
+
+    time_t current_time = time(NULL) - _begin_time;
+    if (current_time > TIME_LIMIT) {
+        current_time = TIME_LIMIT;
+    }
+
+    if (_time != current_time) {
+        _time = current_time;
+        bkg_mine_timer(_time);
     }
 
     move_sprite(SPRITE_CURSOR, _cursor_disp_x, _cursor_disp_y);
