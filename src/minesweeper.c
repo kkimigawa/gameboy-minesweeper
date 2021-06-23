@@ -71,7 +71,43 @@ int8_t mine_open(int16_t x, int16_t y)
     if (_statuses[index] & MINE_STATUS_FLAG_CHECK) { return 0; }
 
     // already open
-    if (_statuses[index] & MINE_STATUS_FLAG_OPEN) { return 0; }
+    if (_statuses[index] & MINE_STATUS_FLAG_OPEN) {
+        uint8_t status = _statuses[index] & 0x0f;
+
+        if (status >= MINE_STATUS_NUM_1 && status <= MINE_STATUS_NUM_8) {
+            int8_t check_count = 0;
+            int16_t open_around[8];
+            int8_t open_around_count = 0;
+
+            for (int16_t around_y = y - 1; around_y <= y + 1; around_y++) {
+                for (int16_t around_x = x - 1; around_x <= x + 1; around_x++) {
+                    if (around_x == x && around_y == y) {
+                        continue;
+                    }
+
+                    if (around_x < 0 || around_x >= _width || around_y < 0 || around_y >= _height) {
+                        continue;
+                    }
+
+                    int16_t around_index = POS_TO_INDEX(around_x, around_y);
+                    if (_statuses[around_index] & MINE_STATUS_FLAG_CHECK) {
+                        check_count++;
+                    } else if ((_statuses[around_index] & MINE_STATUS_FLAG_OPEN) == 0) {
+                        open_around[open_around_count] = around_index;
+                        open_around_count++;
+                    }
+                }
+            }
+
+            if (check_count == status - MINE_STATUS_NUM_1 + 1 ) {
+                for (int8_t i = 0; i < open_around_count; i++) {
+                    mine_open(INDEX_TO_POS_X(open_around[i]), INDEX_TO_POS_Y(open_around[i]));
+                }
+            }
+        } else {
+            return 0;
+        }
+    }
 
     uint8_t status = _statuses[index];
     if (status == MINE_STATUS_BLANK) {
