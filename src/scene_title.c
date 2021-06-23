@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include <stdint.h>
-#include <gb/drawing.h>
 #include "scene_title.h"
 #include "scene.h"
 #include "keypad.h"
