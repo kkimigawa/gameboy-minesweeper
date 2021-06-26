@@ -34,3 +34,7 @@ $(OBJ_DIR)/%.o : $(ASSET_DIR)/%.c
 clean:
 	@rm -rf $(DIST_DIR)
 	@rm -rf $(OBJ_DIR)
+
+.PHONY : run
+run:
+	@bgb.exe $(DIST_DIR)/$(ROM_NAME)
