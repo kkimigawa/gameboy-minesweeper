@@ -21,6 +21,12 @@ Cleanup project
 $ make clean
 ```
 
+Run game on Bgb gameboy emulator  
+(set path to Bgb emulator)
+```bash
+$ make run
+```
+
 ## Tools
 
 ### Gameboy emulator
