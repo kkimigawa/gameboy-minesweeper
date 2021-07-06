@@ -2,6 +2,7 @@
 #include "scene_title.h"
 #include "scene.h"
 #include "keypad.h"
+#include "helper.h"
 #include "../assets/bkg_map_title.h"
 #include "../assets/bkg_tile_title.h"
 
@@ -10,6 +11,8 @@
 
 void scene_title_init()
 {
+    rand_init();
+
     HIDE_BKG;
     HIDE_SPRITES;
 

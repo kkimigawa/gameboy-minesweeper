@@ -3,6 +3,7 @@
 #include "scene_game.h"
 #include "scene.h"
 #include "keypad.h"
+#include "helper.h"
 #include "minesweeper.h"
 #include "../assets/bkg_tile_mine.h"
 #include "../assets/bkg_map_mine.h"
@@ -88,6 +89,8 @@ static void update_state_end();
 
 void scene_game_init()
 {
+    rand_init_seed();
+
     HIDE_BKG;
     HIDE_SPRITES;
 
